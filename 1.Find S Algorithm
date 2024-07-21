@@ -1,0 +1,19 @@
+import csv
+
+def find_s_algorithm(filename):
+    with open(filename, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        data = [row for row in csvreader]
+    hypothesis = ['0'] * (len(data[0]) - 1)
+    for example in data[1:]:
+        if example[-1].strip().lower() == 'yes':
+            for i in range(len(hypothesis)):
+                if hypothesis[i] == '0':
+                    hypothesis[i] = example[i]
+                elif hypothesis[i] != example[i]:
+                    hypothesis[i] = '?'
+
+    return hypothesis
+filename = '/content/training data.txt'
+hypothesis = find_s_algorithm(filename)
+print("The final hypothesis is:", hypothesis)

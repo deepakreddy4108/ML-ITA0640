@@ -1,0 +1,20 @@
+import pandas as pd
+data = pd.read_csv('/content/training data.txt')
+features = data.iloc[:, :-1].values
+target = data.iloc[:, -1].values
+S = ['0'] * features.shape[1]
+G = [['?'] * features.shape[1]]
+for i, example in enumerate(features):
+    if target[i] == 'Yes':
+        S = [example[j] if S[j] == '0' else '?' if S[j] != example[j] else S[j] for j in range(len(S))]
+        G = [g for g in G if all(g[j] == '?' or g[j] == example[j] for j in range(len(g)))]
+    else:
+        new_G = []
+        for g in G:
+            for j in range(len(g)):
+                if g[j] == '?':
+                    new_G.extend([g[:j] + [val] + g[j+1:] for val in set(features[:, j]) if val != example[j]])
+        G = [g for g in new_G if any(g[j] == '?' or g[j] != S[j] for j in range(len(g)))]
+
+print(f"Most specific hypothesis S: {S}")
+print(f"Most general hypotheses G: {G}")

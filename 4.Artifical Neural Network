@@ -1,0 +1,37 @@
+import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+def train(X, y, epochs, learning_rate):
+    input_neurons, hidden_neurons, output_neurons = X.shape[1], 2, 1
+    hw, hb = np.random.uniform(size=(input_neurons, hidden_neurons)), np.random.uniform(size=(1, hidden_neurons))
+    ow, ob = np.random.uniform(size=(hidden_neurons, output_neurons)), np.random.uniform(size=(1, output_neurons))
+
+    for _ in range(epochs):
+        ha = sigmoid(np.dot(X, hw) + hb)
+        po = sigmoid(np.dot(ha, ow) + ob)
+        error = y - po
+        d_po = error * sigmoid_derivative(po)
+        d_ha = d_po.dot(ow.T) * sigmoid_derivative(ha)
+
+        ow += ha.T.dot(d_po) * learning_rate
+        ob += np.sum(d_po, axis=0, keepdims=True) * learning_rate
+        hw += X.T.dot(d_ha) * learning_rate
+        hb += np.sum(d_ha, axis=0, keepdims=True) * learning_rate
+
+    return hw, hb, ow, ob
+
+def predict(X, hw, hb, ow, ob):
+    ha = sigmoid(np.dot(X, hw) + hb)
+    return sigmoid(np.dot(ha, ow) + ob)
+
+X, y = np.array([[0, 0], [0, 1], [1, 0], [1, 1]]), np.array([[0], [1], [1], [0]])
+epochs, learning_rate = 10000, 0.1
+
+hw, hb, ow, ob = train(X, y, epochs, learning_rate)
+predictions = predict(X, hw, hb, ow, ob)
+print("Predicted outputs:\n", predictions)
