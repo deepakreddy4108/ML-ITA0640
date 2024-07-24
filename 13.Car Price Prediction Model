@@ -1,0 +1,17 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+df = pd.read_csv(r"D:\ML (LAB)\CarPrediction.csv")
+X = df[['Year', 'Mileage']]
+y = df['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+def predict_car_price(year, mileage):
+    input_data = pd.DataFrame([[year, mileage]], columns=['Year', 'Mileage'])
+    prediction = model.predict(input_data)
+    return prediction[0]
+year = 2015
+mileage = 50000
+predicted_price = predict_car_price(year, mileage)
+print(f"Predicted price for a car from {year} with {mileage} miles is ${predicted_price:.2f}")
